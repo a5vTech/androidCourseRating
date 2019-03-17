@@ -4,13 +4,12 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+
+import android.text.Html;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 import dk.tangsolutions.courseratingapplication.Course;
 import dk.tangsolutions.courseratingapplication.R;
@@ -25,6 +24,7 @@ public class RateCourseActivity extends AppCompatActivity implements SeekBar.OnS
 //    private TextView subRelLabel, teachPerformanceLabel, teachPrepLabel, feedbackLabel, goodExampleLabel, jobOpportunitiesLabel;
 
     private Course courseToRate;
+    private Boolean hasSentMail = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,16 +33,21 @@ public class RateCourseActivity extends AppCompatActivity implements SeekBar.OnS
         init();
         Intent intent = getIntent();
         courseToRate = intent.getParcelableExtra("Course");
-        courseSubject.setText(courseToRate.getSubject());
+
+        if (savedInstanceState != null) {
+            this.courseToRate = savedInstanceState.getParcelable("courseToRate");
+            Rating fethedRating = savedInstanceState.getParcelable("rating");
+            this.subRelBar.setProgress(fethedRating.getSubjectRelevans());
+            this.teachPerformanceBar.setProgress(fethedRating.getTeacherPerformance());
+            this.teachPrepBar.setProgress(fethedRating.getTeacherPreparation());
+            this.feedbackBar.setProgress(fethedRating.getAmountOfFeedback());
+            this.goodExampleBar.setProgress(fethedRating.getGoodExamples());
+            this.jobOpportunitiesBar.setProgress(fethedRating.getJobOpportunities());
+        }
+
         loadTeacherInfo();
+        courseSubject.setText(courseToRate.getSubject());
 
-
-    }
-
-    private void loadTeacherInfo() {
-        String text = getString(R.string.teacher_info, courseToRate.getCourseTeacher().getFirstName(), courseToRate.getCourseTeacher().getLastName(), courseToRate.getCourseTeacher().getEmail());
-        this.teacherInfo.setText(text);
-        this.teacherInfo.setTextSize(18);
 
     }
 
@@ -52,6 +57,12 @@ public class RateCourseActivity extends AppCompatActivity implements SeekBar.OnS
         this.courseSubject = findViewById(R.id.courseSubject);
         this.teacherInfo = findViewById(R.id.teacherInfo);
 
+    }
+
+    private void loadTeacherInfo() {
+        String text = getString(R.string.teacher_info, courseToRate.getCourseTeacher().getFirstName(), courseToRate.getCourseTeacher().getLastName(), courseToRate.getCourseTeacher().getEmail());
+        this.teacherInfo.setText(text);
+        this.teacherInfo.setTextSize(18);
     }
 
 
@@ -81,6 +92,52 @@ public class RateCourseActivity extends AppCompatActivity implements SeekBar.OnS
 
 
     public void rateCourse(View view) {
+        String currentUser = UserService.getCurrentUser(this);
+
+        // Create rating object
+        Rating rating = new Rating();
+        rating.setSubjectRelevans(this.subRelBar.getProgress());
+        rating.setTeacherPerformance(this.teachPerformanceBar.getProgress());
+        rating.setTeacherPreparation(this.teachPrepBar.getProgress());
+        rating.setAmountOfFeedback(this.feedbackBar.getProgress());
+        rating.setGoodExamples(this.goodExampleBar.getProgress());
+        rating.setJobOpportunities(this.jobOpportunitiesBar.getProgress());
+        rating.setStudent(UserService.getStudentByEmail(currentUser));
+        // Add rating to the course
+        courseToRate.getRatings().add(rating);
+        // Update course in courseService
+        CourseService.updateCourse(courseToRate);
+
+        //Send mail to teacher
+        sendMail(courseToRate);
+
+//
+
+    }
+
+
+    private void sendMail(Course courseToRate) {
+        Intent email = new Intent(Intent.ACTION_SEND);
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{"jesper2604@gmail.com"});
+        email.putExtra(Intent.EXTRA_SUBJECT, "Rating from course: " + courseToRate.getSubject());
+        email.putExtra(Intent.EXTRA_TEXT,
+                Html.fromHtml("<b>Rating from course, " + courseToRate.getSubject() + "<b>"));
+
+        email.setType("text/plain");
+
+        startActivity(Intent.createChooser(email, "Choose an email client"));
+        this.hasSentMail = true;
+
+    }
+
+    public void updateSeekBarValue(TextView viewToUpdate, int progress) {
+        String text = getString(R.string.seekBarValueStr, progress);
+        viewToUpdate.setText(text);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         Rating rating = new Rating();
         rating.setSubjectRelevans(this.subRelBar.getProgress());
         rating.setTeacherPerformance(this.teachPerformanceBar.getProgress());
@@ -89,31 +146,17 @@ public class RateCourseActivity extends AppCompatActivity implements SeekBar.OnS
         rating.setGoodExamples(this.goodExampleBar.getProgress());
         rating.setJobOpportunities(this.jobOpportunitiesBar.getProgress());
 
-
-        String currentUser = "";
-        String filename = "currentUser";
-        File file = new File(getFilesDir(), filename);
-        try {
-            Scanner sc = new Scanner(file);
-            currentUser = sc.nextLine();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        rating.setStudent(UserService.getStudentByEmail(currentUser));
-        courseToRate.getRatings().add(rating);
-
-        CourseService.updateCourse(courseToRate);
-
-
-        Intent intent = new Intent(this, CourseListActivity.class);
-        startActivity(intent);
-
+        outState.putParcelable("rating", rating);
+        outState.putParcelable("courseToRate", courseToRate);
     }
 
-    public void updateSeekBarValue(TextView viewToUpdate, int progress) {
-        String text = getString(R.string.seekBarValueStr, progress);
-        viewToUpdate.setText(text);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (this.hasSentMail) {
+            Intent intent = new Intent(getApplicationContext(), CourseListActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override

@@ -1,17 +1,11 @@
 package dk.tangsolutions.courseratingapplication.services;
 
-import android.content.Context;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
+
 
 import dk.tangsolutions.courseratingapplication.Course;
-import dk.tangsolutions.courseratingapplication.Rating;
-import dk.tangsolutions.courseratingapplication.Student;
+
 
 public class CourseService {
     private static ArrayList<Course> courses = new ArrayList<>();
@@ -25,8 +19,6 @@ public class CourseService {
                 courses.set(i, courseToRate);
             }
         }
-
-
     }
 
 

@@ -12,7 +12,7 @@
         android:id="@+id/logoView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:background="@color/logoBackground"
         android:contentDescription="@string/logoImage"
         android:paddingLeft="30dp"
@@ -30,13 +30,16 @@
         android:layout_marginTop="70dp"
         android:background="@drawable/login_input_background"
         android:ems="10"
+        android:gravity="center"
         android:hint="@string/username"
         android:importantForAutofill="no"
         android:inputType="textEmailAddress"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/logoView"
         app:layout_constraintStart_toStartOf="@+id/logoView"
         app:layout_constraintTop_toBottomOf="@+id/logoView"
-        android:gravity="center"
         tools:targetApi="o" />
 
     <EditText
@@ -46,35 +49,46 @@
         android:layout_marginTop="28dp"
         android:background="@drawable/login_input_background"
         android:ems="10"
+        android:gravity="center"
         android:hint="@string/password"
         android:importantForAutofill="no"
         android:inputType="textPassword"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
         android:textColorLink="@android:color/black"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/userName"
         app:layout_constraintStart_toStartOf="@+id/userName"
         app:layout_constraintTop_toBottomOf="@+id/userName"
-        tools:targetApi="o"
-        android:gravity="center"/>
+        tools:targetApi="o" />
 
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/login_button_background"
         android:onClick="login"
         android:text="@string/login_btn_text"
-        app:layout_constraintBaseline_toBaselineOf="@+id/button2"
-        app:layout_constraintEnd_toEndOf="@+id/password" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/register_btn"
+        app:layout_constraintEnd_toEndOf="@+id/password"
         app:layout_constraintStart_toStartOf="@+id/password"
         app:layout_constraintTop_toBottomOf="@+id/password" />
+
+    <CheckBox
+        android:id="@+id/cb_remember"
+        style="@android:style/Widget.Holo.CompoundButton.CheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:buttonTint="@color/input_color_background"
+        android:text="@string/remeber_me"
+        android:textAllCaps="false"
+        android:textColor="@color/input_color_background"
+        android:textColorLink="@color/input_color_background"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        tools:targetApi="lollipop" />
 </android.support.constraint.ConstraintLayout>

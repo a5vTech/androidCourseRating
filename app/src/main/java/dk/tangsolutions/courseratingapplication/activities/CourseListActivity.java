@@ -1,39 +1,24 @@
 package dk.tangsolutions.courseratingapplication.activities;
 
-import android.content.Intent;
-import android.graphics.CornerPathEffect;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+
+
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import dk.tangsolutions.courseratingapplication.Adapter;
 import dk.tangsolutions.courseratingapplication.Course;
 import dk.tangsolutions.courseratingapplication.R;
-import dk.tangsolutions.courseratingapplication.Rating;
-import dk.tangsolutions.courseratingapplication.Student;
 import dk.tangsolutions.courseratingapplication.services.CourseService;
 import dk.tangsolutions.courseratingapplication.services.UserService;
 
 public class CourseListActivity extends AppCompatActivity {
-    //    private LinearLayout rateLayout;
-    private CourseService courseService = new CourseService();
     private RecyclerView recyclerView;
 
     @Override

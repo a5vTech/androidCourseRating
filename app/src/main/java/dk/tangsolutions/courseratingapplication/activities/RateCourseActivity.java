@@ -1,11 +1,12 @@
 package dk.tangsolutions.courseratingapplication.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 
-import android.text.Html;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -21,10 +22,33 @@ public class RateCourseActivity extends AppCompatActivity implements SeekBar.OnS
     private TextView courseSubject, teacherInfo;
     private SeekBar subRelBar, teachPerformanceBar, teachPrepBar, feedbackBar, goodExampleBar, jobOpportunitiesBar;
     private TextView subRelValue, teachPerformanceValue, teachPrepValue, feedbackValue, goodExampleValue, jobOpportunitiesValue;
-//    private TextView subRelLabel, teachPerformanceLabel, teachPrepLabel, feedbackLabel, goodExampleLabel, jobOpportunitiesLabel;
-
     private Course courseToRate;
     private Boolean hasSentMail = false;
+
+    public int getAverageScore() {
+        return (subRelBar.getProgress() + teachPerformanceBar.getProgress() + teachPrepBar.getProgress() + feedbackBar.getProgress() + goodExampleBar.getProgress() + jobOpportunitiesBar.getProgress()) / 6;
+    }
+
+
+    public Character getGrade() {
+        int score = getAverageScore();
+
+        if (score > 90) {
+            return 'A';
+        } else if (score > 80) {
+            return 'B';
+        } else if (score > 70) {
+            return 'C';
+        } else if (score > 60) {
+            return 'D';
+        } else if (score > 50) {
+            return 'E';
+        } else {
+            return 'F';
+        }
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,23 +133,28 @@ public class RateCourseActivity extends AppCompatActivity implements SeekBar.OnS
         CourseService.updateCourse(courseToRate);
 
         //Send mail to teacher
+        Intent intent = new Intent(getApplicationContext(), CourseListActivity.class);
+        startActivity(intent);
         sendMail(courseToRate);
 
-//
 
     }
 
 
+    @SuppressLint("NewApi")
     private void sendMail(Course courseToRate) {
         Intent email = new Intent(Intent.ACTION_SEND);
-        email.putExtra(Intent.EXTRA_EMAIL, new String[]{"jesper2604@gmail.com"});
-        email.putExtra(Intent.EXTRA_SUBJECT, "Rating from course: " + courseToRate.getSubject());
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.recipient)});
+        email.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.mail_1, courseToRate.getSubject()));
         email.putExtra(Intent.EXTRA_TEXT,
-                Html.fromHtml("<b>Rating from course, " + courseToRate.getSubject() + "<b>"));
+                getString(R.string.mail_2, courseToRate.getSubject())
+                        + getString(R.string.mail_3, getAverageScore()) + "\n\n"
+                        + getString(R.string.mail_4, getGrade()));
 
-        email.setType("text/plain");
 
-        startActivity(Intent.createChooser(email, "Choose an email client"));
+        email.setType("text/html");
+
+        startActivity(Intent.createChooser(email, getString(R.string.mail_client)));
         this.hasSentMail = true;
 
     }
@@ -150,15 +179,14 @@ public class RateCourseActivity extends AppCompatActivity implements SeekBar.OnS
         outState.putParcelable("courseToRate", courseToRate);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (this.hasSentMail) {
-            Intent intent = new Intent(getApplicationContext(), CourseListActivity.class);
-            startActivity(intent);
-        }
-    }
 
+    /**
+     * This method updates the seekBar textview values
+     *
+     * @param seekBar  seekBar
+     * @param progress Progress
+     * @param fromUser fromUser
+     */
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 

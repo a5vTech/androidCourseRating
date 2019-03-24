@@ -17,4 +17,17 @@
     <string name="start_value">0 / 100</string>
     <string name="seekBarValueStr">%1$d / 100</string>
     <string name="teacher_info">Course teacher:\n%1$s %2$s\n%3$s</string>
+    <string name="course">Course</string>
+    <string name="courses">Courses</string>
+    <string name="recipient">jesper2604@gmail.com</string>
+    <string name="mail_1">Rating from course, %1$s</string>
+    <string name="mail_2">You have received a rating on the course: %1$s</string>
+    <string name="mail_3">Your average score is: %1$d points</string>
+    <string name="mail_4">This gives an overall grade of: %1$s</string>
+    <string name="mail_client">Choose an email client</string>
+    <string name="login_error">Username or password is incorrect</string>
+    <string name="shared_pref">current_user</string>
+    <string name="remeber_me">Remember me?</string>
+    <string name="use_kea_mail_error">Please login using your kea credentials</string>
+    <string name="valid_email_error">Please enter a valid email address!</string>
 </resources>
